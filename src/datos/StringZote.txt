@@ -1,0 +1,23 @@
+into p;
+public class Archivo {
+    
+    int n = 1998;
+	String p12;
+
+    public String muestraContenido(String rutaArchivo) throws FileNotFoundException, IOException {
+        
+        String cadena;
+        String zote = "";
+        FileReader f = new FileReader(rutaArchivo);
+        BufferedReader b = new BufferedReader(f);
+        
+        while ((cadena = b.readLine()) != null) {
+            zote = zote + cadena;
+        }
+        System.out.println(zote);
+        
+        b.close();
+        return zote;
+    }
+
+}
