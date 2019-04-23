@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import modelo.Archivo;
 import modelo.Tokenizer;
@@ -75,6 +75,7 @@ public class Controlador implements ActionListener {
             //inicio borrar varialbles
             this.tokeni.arrayIdentificador.clear();
             this.tokeni.arrayNumero.clear();
+            this.tokeni.arrayNumeroFlotante.clear();
             this.tokeni.arrayPalabraReservada.clear();
             this.tokeni.arraySimbolo.clear();
             //fin borrar varialbles
@@ -82,21 +83,31 @@ public class Controlador implements ActionListener {
             this.tokeni.tokenizer(zote);
             // ArrayList auxiliares para llenar los JTextArea
             ArrayList<String> auxArrayIdentificador = this.tokeni.arrayIdentificador;
-            ArrayList<String> auxArrayNumero = this.tokeni.arrayNumero;
+            ArrayList<Integer> auxArrayNumero = this.tokeni.arrayNumero;
+            ArrayList<String> auxArrayNumeroFlotante = this.tokeni.arrayNumeroFlotante;
             ArrayList<String> auxArraySimbolo = this.tokeni.arraySimbolo;
+            ArrayList<String> auxArrayPalabraReservada = this.tokeni.arrayPalabraReservada;
             
             // Se rellenan los JTextArea
             this.tokeni.rellenarTextField(auxArrayIdentificador, this.vista.jTextAreaIdentificador);                 
-            this.tokeni.rellenarTextField(auxArrayNumero, this.vista.jTextAreaNumero);
+            this.tokeni.rellenarTextFieldNumerico(auxArrayNumero, this.vista.jTextAreaNumero);
+            this.tokeni.rellenarTextField(auxArrayNumeroFlotante, this.vista.jTextAreaNumeroFlotante);
             this.tokeni.rellenarTextField(auxArraySimbolo, this.vista.jTextAreaSimbolo);
-            
+            this.tokeni.rellenarTextField(auxArrayPalabraReservada, this.vista.jTextAreaReservada);
+
             // Da color a el texto
             this.vista.jTextAreaIdentificador.setForeground(new Color(0, 150, 20));
             this.vista.jTextAreaSimbolo.setForeground(new Color(255, 150, 50));
             this.vista.jTextAreaNumero.setForeground(new Color(100, 100, 90));
+            this.vista.jTextAreaNumeroFlotante.setForeground(new Color(100, 100, 90));
+            this.vista.jTextAreaReservada.setForeground(new Color(20,20,250));
             
-            JOptionPane.showMessageDialog(vista, "Escaneo Completado");
+//            JOptionPane.showMessageDialog(vista, "Escaneo Completado");
             this.vista.btnEscanear.setEnabled(false);
+            
+            
+            
+            
         }                                                   // fin BOTÓN ESCANEAR                
         
     }

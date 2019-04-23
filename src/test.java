@@ -17,7 +17,7 @@ public class test {
         Archivo arch = new Archivo();
         
         //Instancia de Tokenizer
-        Tokenizer tokenizer = new Tokenizer();
+        Tokenizer tokenizer = new Tokenizer(vista);
         
         /**
          * Se mandan los objetos a la clase controlador para poder trabajar con estos.
