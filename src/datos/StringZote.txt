@@ -1,4 +1,4 @@
-into p;
+
 public class Archivo {
     
     int n = 1998;

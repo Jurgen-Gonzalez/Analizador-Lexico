@@ -15,9 +15,9 @@ public class Tokenizer_1 {
     public ArrayList<String> arraySimbolo;
     public ArrayList<String> arrayPalabraReservada;
 
-    String[] palabrasReservadas = new String[]{"return", "final", "static", "void", "int", "long", "public", "private", "protected", "new", "String",
+    String[] palabrasReservadas = new String[]{"return", "final", "static", "void", "int", "long", "public", "private", "protected", "new",
         "boolean", "true", "false", "while", "for", "do", "switch", "case", "if", "else", "break", "class", "package", "import", "throws", "null", "float"};
-
+    
     String[] simbolos = new String[]{"=", ".", ":", ";", "(", ")", "{", "}", "[", "]", "-", "_", "+", "-", "*", "/"};
 
     /**
@@ -68,7 +68,7 @@ public class Tokenizer_1 {
                     if (esAlfa(zote.charAt(i))) {
                         lexema += zote.charAt(i);
                         estado = 0;
-                        if (zote.charAt(i + 1) == ';' || zote.charAt(i +1) == ' ') {
+                        if (zote.charAt(i + 1) == ';' || esEspacio(zote.charAt(i +1)) ) {
                             if (esReservada(lexema)) {
                                 arrayPalabraReservada.add(lexema);
                             } else {

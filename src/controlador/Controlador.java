@@ -1,5 +1,6 @@
 package controlador;
 
+import estructuras.Lista;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,7 @@ public class Controlador implements ActionListener {
         this.tokeni  = tokeni;
         chooserFile = new JFileChooser();
 
+       
         //EVENTOS
         this.vista.setResizable(false);
         this.vista.btnEscanear.addActionListener(this);
@@ -83,7 +85,7 @@ public class Controlador implements ActionListener {
             this.tokeni.tokenizer(zote);
             // ArrayList auxiliares para llenar los JTextArea
             ArrayList<String> auxArrayIdentificador = this.tokeni.arrayIdentificador;
-            ArrayList<Integer> auxArrayNumero = this.tokeni.arrayNumero;
+            Lista auxArrayNumero = this.tokeni.arrayNumero;
             ArrayList<String> auxArrayNumeroFlotante = this.tokeni.arrayNumeroFlotante;
             ArrayList<String> auxArraySimbolo = this.tokeni.arraySimbolo;
             ArrayList<String> auxArrayPalabraReservada = this.tokeni.arrayPalabraReservada;

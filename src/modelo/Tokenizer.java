@@ -6,6 +6,7 @@ import java.util.Vector;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import vista.Vista;
+import estructuras.Lista;
 
 /**
  *
@@ -14,13 +15,28 @@ import vista.Vista;
 public class Tokenizer {
 
     public ArrayList<String> arrayIdentificador;
-    public ArrayList<Integer> arrayNumero;
+    public Lista arrayNumero;
     public ArrayList<String> arrayNumeroFlotante;
     public ArrayList<String> arraySimbolo;
     public ArrayList<String> arrayPalabraReservada;
 
+    
+    public enum Simbolos{
+        CLASS(';'),
+        STRING(1001);
+        private final int number;
+        int y = ';';
+        private Simbolos(int number){
+            this.number = number;
+        }
+        
+        public int getNumber(){
+            return number;
+        }
+    }
+    
+    
     Vista vista;
-
     String[] palabrasReservadas = new String[]{"return", "final", "static", "void", "int", "long", "public", "private", "protected", "new", "String",
         "boolean", "true", "false", "while", "for", "do", "switch", "case", "if", "else", "break", "class", "package", "import", "throws", "null", "float"};
 
@@ -32,11 +48,10 @@ public class Tokenizer {
     public Tokenizer(Vista vista) {
         this.vista = vista;
         arrayIdentificador = new ArrayList<>();
-        arrayNumero = new ArrayList<>();
+        arrayNumero = new Lista();
         arrayNumeroFlotante = new ArrayList<>();
         arraySimbolo = new ArrayList<>();
         arrayPalabraReservada = new ArrayList<>();
-
     }
 
     /**
@@ -77,17 +92,15 @@ public class Tokenizer {
                     }
                     break;
 
-                case 2:
+                case 2: // - Decidir si es reservada o un identificador
                     if (esReservada(lexema)) {
-                        estado = 6;
+                        arrayPalabraReservada.add(lexema);
                     } else {
                         arrayIdentificador.add(lexema);
-
-                        lexema = "";
-                        estado = 0;
                     }
+                    lexema = "";
+                    estado = 0;
                     break;
-
                 case 3:
                     if (esDígito(zote.charAt(i))) {
                         estado = 4;
@@ -98,19 +111,16 @@ public class Tokenizer {
                     break;
                 case 4:
                     if (esDígito(zote.charAt(i))) {
-                        if (zote.charAt(i + 1) == '.') {
-                            estado = 7;
-                        }
                         lexema += zote.charAt(i);
                         i++;
 
-                    } else {
-                        if (lexema.contains(".")) {
-                            estado = 9;
-                        } else {
-                            estado = 5;
-                        }
+                    } else if(zote.charAt(i) == '.'){
+                        lexema += zote.charAt(i);
+                        
+                        i++;
+                        estado = 6;
                     }
+                    else estado = 5;
                     break;
 
                 case 5:
@@ -118,42 +128,28 @@ public class Tokenizer {
                     DefaultTableModel modelo = new DefaultTableModel();
                     vista.tabla.setModel(modelo);
                     
-                    rellenarTabla(arrayNumero.get(0).getClass(), arrayIdentificador.get(0) , String.valueOf(arrayNumero.get(0)));
+                    //String [] aux = arrayNumero.get(0).getClass().toString().split(".");
+                    
+                    
+                    //rellenarTabla(aux[aux.length -1], arrayIdentificador.get(0) , String.valueOf(arrayNumero.get(0)));
                     
                     lexema = "";
                     estado = 0;
                     break;
-                case 6: // es palabra reservada
-                    if (esReservada(lexema)) {
-                        arrayPalabraReservada.add(lexema);
-                        lexema = "";
-                        estado = 0;
-                        // i++;
-                    }
-
-                    break;
-                case 7: // es flotante
-                    if (zote.charAt(i) == '.') {
-
-                        estado = 8;
-                    } else {
-                        estado = 0;
-                    }
-                    break;
-                case 8:
-
-                    if (zote.charAt(i) == '.') {
+                case 6: // Solo admite numeros (esto se aplica despues del punto decimal)
+                    if (esDígito(zote.charAt(i))) {
                         lexema += zote.charAt(i);
+                        i++;
                     } else {
-                        lexema += zote.charAt(i);
+                        estado = 9;
                     }
-
-                    estado = 0;
                     break;
                 case 9:
                     arrayNumeroFlotante.add(lexema);
                     lexema = "";
                     estado = 0;
+                    break;
+                case 50: // - Caso para el manejo de errores
                     break;
                 default:
                     if (esEspacio(zote.charAt(i))) {
@@ -163,6 +159,7 @@ public class Tokenizer {
                         arraySimbolo.add(String.valueOf(zote.charAt(i++)));
                     }
                     estado = 0;
+                    
             }
         }
 
@@ -220,7 +217,7 @@ public class Tokenizer {
         }
         txt.setText(aux);
     }
-    public void rellenarTextFieldNumerico(ArrayList<Integer> a, JTextArea txt) {
+    public void rellenarTextFieldNumerico(Lista a, JTextArea txt) {
         String aux = "";
         for (int i = 0; i < a.size(); i++) {
             aux += a.get(i) + "    ";
