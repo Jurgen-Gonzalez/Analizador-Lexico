@@ -1,12 +1,10 @@
 package modelo;
 
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Vector;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import vista.Vista;
-import estructuras.Lista;
+import java.util.Arrays;
 
 /**
  *
@@ -14,25 +12,28 @@ import estructuras.Lista;
  */
 public class Tokenizer {
 
-    public ArrayList<String> arrayIdentificador;
-    public Lista arrayNumero;
-    public ArrayList<String> arrayNumeroFlotante;
-    public ArrayList<String> arraySimbolo;
-    public ArrayList<String> arrayPalabraReservada;
+    public String [] arrayIdentificador;
+    public int [] arrayNumero;
+    public double [] arrayNumeroFlotante;
+    public String [] arraySimbolo;
+    public String [] arrayPalabraReservada;
+    public String [] lexemas;
+    public String [] tiposLexemas;
 
     
-    public enum Simbolos{
-        CLASS(';'),
-        STRING(1001);
-        private final int number;
-        int y = ';';
-        private Simbolos(int number){
-            this.number = number;
+    public enum Lexemas{
+        RESERVADA("Palabra Reservada"),
+        IDENTIFICADOR("Identificador"),
+        NUMERO("Numero"),
+        NUMERO_DECIMAL("Numero Decimal"),
+        SIMBOLO("Caracter");
+                
+        private final String tipo;
+        
+        private Lexemas(String tipo){
+            this.tipo = tipo;
         }
         
-        public int getNumber(){
-            return number;
-        }
     }
     
     
@@ -47,11 +48,13 @@ public class Tokenizer {
      */
     public Tokenizer(Vista vista) {
         this.vista = vista;
-        arrayIdentificador = new ArrayList<>();
-        arrayNumero = new Lista();
-        arrayNumeroFlotante = new ArrayList<>();
-        arraySimbolo = new ArrayList<>();
-        arrayPalabraReservada = new ArrayList<>();
+        arrayIdentificador = new String [0];
+        arrayNumero = new int[0];
+        arrayNumeroFlotante = new double[0];
+        arraySimbolo = new String [0];
+        arrayPalabraReservada = new String [0];
+        lexemas = new String [0];
+        tiposLexemas = new String [0];
     }
 
     /**
@@ -94,9 +97,9 @@ public class Tokenizer {
 
                 case 2: // - Decidir si es reservada o un identificador
                     if (esReservada(lexema)) {
-                        arrayPalabraReservada.add(lexema);
+                        agregarALista(lexema, Lexemas.RESERVADA);
                     } else {
-                        arrayIdentificador.add(lexema);
+                        agregarALista(lexema, Lexemas.IDENTIFICADOR);
                     }
                     lexema = "";
                     estado = 0;
@@ -124,10 +127,10 @@ public class Tokenizer {
                     break;
 
                 case 5:
-                    arrayNumero.add(Integer.valueOf(lexema));
+                    agregarALista(lexema, Lexemas.NUMERO);
+                    
                     DefaultTableModel modelo = new DefaultTableModel();
                     vista.tabla.setModel(modelo);
-                    
                     //String [] aux = arrayNumero.get(0).getClass().toString().split(".");
                     
                     
@@ -145,7 +148,8 @@ public class Tokenizer {
                     }
                     break;
                 case 9:
-                    arrayNumeroFlotante.add(lexema);
+                    agregarALista(lexema, Lexemas.NUMERO_DECIMAL);
+                    
                     lexema = "";
                     estado = 0;
                     break;
@@ -154,15 +158,55 @@ public class Tokenizer {
                 default:
                     if (esEspacio(zote.charAt(i))) {
 
-                        i++;
                     } else {
-                        arraySimbolo.add(String.valueOf(zote.charAt(i++)));
+                        agregarALista(String.valueOf(zote.charAt(i)), Lexemas.SIMBOLO);
                     }
+                    i++;
                     estado = 0;
                     
             }
         }
+        
+        vista.tablaLexemas.setModel(new DefaultTableModel(tablaLexemas(), new String[]{"Tipo", "Lexema"}));
 
+    }
+    
+    private void agregarALista(String lexema, Lexemas tipo){
+        switch(tipo){
+            case IDENTIFICADOR:
+                arrayIdentificador = Arrays.copyOf(arrayIdentificador, arrayIdentificador.length + 1);
+                arrayIdentificador[arrayIdentificador.length - 1] = lexema;
+                break;
+            case NUMERO:
+                arrayNumero = Arrays.copyOf(arrayNumero, arrayNumero.length + 1);
+                arrayNumero[arrayNumero.length - 1] = Integer.parseInt(lexema);
+                break;
+            case NUMERO_DECIMAL:
+                arrayNumeroFlotante = Arrays.copyOf(arrayNumeroFlotante, arrayNumeroFlotante.length + 1);
+                arrayNumeroFlotante[arrayNumeroFlotante.length - 1] = Double.parseDouble(lexema);
+                break;
+            case RESERVADA:
+                arrayPalabraReservada = Arrays.copyOf(arrayPalabraReservada, arrayPalabraReservada.length + 1);
+                arrayPalabraReservada[arrayPalabraReservada.length - 1] = lexema;
+                break;
+            case SIMBOLO:
+                arraySimbolo = Arrays.copyOf(arraySimbolo, arraySimbolo.length + 1);
+                arraySimbolo[arraySimbolo.length - 1] = lexema;
+        }
+        
+        lexemas = Arrays.copyOf(lexemas, lexemas.length + 1);
+        lexemas[lexemas.length - 1] = lexema;
+        tiposLexemas = Arrays.copyOf(tiposLexemas, tiposLexemas.length + 1);
+        tiposLexemas[tiposLexemas.length -1] = tipo.tipo;
+    }
+    
+    private String [][] tablaLexemas(){
+        String [][] tablaLexemas = new String[lexemas.length][2];
+        for (int i = 0; i < lexemas.length; i++) {
+            tablaLexemas[i][0] = tiposLexemas[i];
+            tablaLexemas[i][1] = lexemas[i];
+        }
+        return tablaLexemas;
     }
 
     /**
@@ -210,20 +254,28 @@ public class Tokenizer {
      * StringZote
      * @param txt, JTextArea que se llenará y que mostrará en pantalla
      */
-    public void rellenarTextField(ArrayList<String> a, JTextArea txt) {
+    public void rellenarTextField(String [] a, JTextArea txt) {
         String aux = "";
-        for (int i = 0; i < a.size(); i++) {
-            aux += a.get(i) + "    ";
+        for (int i = 0; i < a.length; i++) {
+            aux += a[i] + "    ";
         }
         txt.setText(aux);
     }
-    public void rellenarTextFieldNumerico(Lista a, JTextArea txt) {
+     public void rellenarTextFieldNumerico(int [] a, JTextArea txt) {
         String aux = "";
-        for (int i = 0; i < a.size(); i++) {
-            aux += a.get(i) + "    ";
+        for (int i = 0; i < a.length; i++) {
+            aux += a[i] + "    ";
         }
         txt.setText(aux);
     }
+      public void rellenarTextFieldDecimal(double [] a, JTextArea txt) {
+        String aux = "";
+        for (int i = 0; i < a.length; i++) {
+            aux += a[i] + "    ";
+        }
+        txt.setText(aux);
+    }
+    
     public void rellenarTabla(Class a, String b, String c){
         vista.tabla.setModel(new javax.swing.table.DefaultTableModel(
                             new Object[][]{

@@ -1,6 +1,5 @@
 package controlador;
 
-import estructuras.Lista;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,25 +74,25 @@ public class Controlador implements ActionListener {
         if (o == this.vista.btnEscanear) {                     // BOTÓN ESCANEAR
             
             //inicio borrar varialbles
-            this.tokeni.arrayIdentificador.clear();
-            this.tokeni.arrayNumero.clear();
-            this.tokeni.arrayNumeroFlotante.clear();
-            this.tokeni.arrayPalabraReservada.clear();
-            this.tokeni.arraySimbolo.clear();
+            this.tokeni.arrayIdentificador = new String[0];
+            this.tokeni.arrayNumero= new int[0];
+            this.tokeni.arrayNumeroFlotante= new double[0];
+            this.tokeni.arrayPalabraReservada= new String[0];
+            this.tokeni.arraySimbolo= new String[0];
             //fin borrar varialbles
             
             this.tokeni.tokenizer(zote);
             // ArrayList auxiliares para llenar los JTextArea
-            ArrayList<String> auxArrayIdentificador = this.tokeni.arrayIdentificador;
-            Lista auxArrayNumero = this.tokeni.arrayNumero;
-            ArrayList<String> auxArrayNumeroFlotante = this.tokeni.arrayNumeroFlotante;
-            ArrayList<String> auxArraySimbolo = this.tokeni.arraySimbolo;
-            ArrayList<String> auxArrayPalabraReservada = this.tokeni.arrayPalabraReservada;
+            String [] auxArrayIdentificador = this.tokeni.arrayIdentificador;
+            int [] auxArrayNumero = this.tokeni.arrayNumero;
+            double [] auxArrayNumeroFlotante = this.tokeni.arrayNumeroFlotante;
+            String [] auxArraySimbolo = this.tokeni.arraySimbolo;
+            String [] auxArrayPalabraReservada = this.tokeni.arrayPalabraReservada;
             
             // Se rellenan los JTextArea
             this.tokeni.rellenarTextField(auxArrayIdentificador, this.vista.jTextAreaIdentificador);                 
             this.tokeni.rellenarTextFieldNumerico(auxArrayNumero, this.vista.jTextAreaNumero);
-            this.tokeni.rellenarTextField(auxArrayNumeroFlotante, this.vista.jTextAreaNumeroFlotante);
+            this.tokeni.rellenarTextFieldDecimal(auxArrayNumeroFlotante, this.vista.jTextAreaNumeroFlotante);
             this.tokeni.rellenarTextField(auxArraySimbolo, this.vista.jTextAreaSimbolo);
             this.tokeni.rellenarTextField(auxArrayPalabraReservada, this.vista.jTextAreaReservada);
 

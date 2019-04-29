@@ -64,6 +64,8 @@ public class Vista extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaNumeroFlotante = new javax.swing.JTextArea();
         jLabel14 = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tablaLexemas = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -155,6 +157,29 @@ public class Vista extends javax.swing.JFrame {
 
         jLabel14.setText("Flotante");
 
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(300, 200));
+
+        tablaLexemas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Tipo", "Lexema"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane7.setViewportView(tablaLexemas);
+
         javax.swing.GroupLayout panelGralLayout = new javax.swing.GroupLayout(panelGral);
         panelGral.setLayout(panelGralLayout);
         panelGralLayout.setHorizontalGroup(
@@ -183,7 +208,7 @@ public class Vista extends javax.swing.JFrame {
                                     .addComponent(jLabel3)
                                     .addComponent(jLabel6))
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
                             .addComponent(jScrollPane4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelGralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -193,8 +218,10 @@ public class Vista extends javax.swing.JFrame {
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(48, 48, 48)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(100, 100, 100))
+                        .addGroup(panelGralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(38, 38, 38))
                     .addGroup(panelGralLayout.createSequentialGroup()
                         .addComponent(jLabel14)
                         .addGap(533, 533, 533)
@@ -259,7 +286,11 @@ public class Vista extends javax.swing.JFrame {
                         .addGroup(panelGralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelGralLayout.createSequentialGroup()
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -349,6 +380,7 @@ public class Vista extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     public javax.swing.JTextArea jTextAreaIdentificador;
     public javax.swing.JTextArea jTextAreaNumero;
     public javax.swing.JTextArea jTextAreaNumeroFlotante;
@@ -356,5 +388,6 @@ public class Vista extends javax.swing.JFrame {
     public javax.swing.JTextArea jTextAreaSimbolo;
     public javax.swing.JPanel panelGral;
     public javax.swing.JTable tabla;
+    public javax.swing.JTable tablaLexemas;
     // End of variables declaration//GEN-END:variables
 }
