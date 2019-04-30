@@ -17,8 +17,14 @@ public class Tokenizer {
     public double [] arrayNumeroFlotante;
     public String [] arraySimbolo;
     public String [] arrayPalabraReservada;
+    
     public String [] lexemas;
     public String [] tiposLexemas;
+    
+    public String [] tipoIdentificador;
+    public String [] nombreIdentificador;
+    public String [] valorIdentificador;
+    private String [] recuerdaLexema;
 
     
     public enum Lexemas{
@@ -38,9 +44,15 @@ public class Tokenizer {
     
     
     Vista vista;
-    String[] palabrasReservadas = new String[]{"return", "final", "static", "void", "int", "long", "public", "private", "protected", "new", "String",
-        "boolean", "true", "false", "while", "for", "do", "switch", "case", "if", "else", "break", "class", "package", "import", "throws", "null", "float"};
-
+    public static final String[] palabrasReservadas = new String[]{"return", "final", 
+        "static", "void", "int", "long", "public", "private", "protected", "new",
+        "boolean", "true", "false", "while", "for", "do", "switch", "case", "if", 
+        "else", "break", "class", "package", "import", "throws", "null", "float", 
+        "byte", "short", "double", "String"};
+    
+    public static final String [] tiposDeDatos = new String[]{"int", "double", 
+        "String", "long", "short", "class", "boolean", "char", "byte"};
+    
     /**
      * Constructor
      *
@@ -53,8 +65,16 @@ public class Tokenizer {
         arrayNumeroFlotante = new double[0];
         arraySimbolo = new String [0];
         arrayPalabraReservada = new String [0];
+        
+        //Tabla Lexemas
         lexemas = new String [0];
         tiposLexemas = new String [0];
+        
+        //tabla Identificador
+        tipoIdentificador = new String[0];
+        nombreIdentificador  = new String[0];
+        valorIdentificador = new String[0];
+        recuerdaLexema = new String[4];
     }
 
     /**
@@ -96,11 +116,27 @@ public class Tokenizer {
                     break;
 
                 case 2: // - Decidir si es reservada o un identificador
+                    
                     if (esReservada(lexema)) {
                         agregarALista(lexema, Lexemas.RESERVADA);
+                        /*
+                        for (String dato : tiposDeDatos)
+                            if(dato.equals(lexema))
+                                recuerdaLexema[0] = lexema;
+                        */
                     } else {
                         agregarALista(lexema, Lexemas.IDENTIFICADOR);
+                        /*
+                        if(recuerdaLexema[0] != null)
+                            recuerdaLexema[1] = lexema;
+                        */
                     }
+                    /*
+                    if(recuerdaLexema[0] != null && recuerdaLexema[1] != null && recuerdaLexema[2] != null && recuerdaLexema[3] != null){
+                        agregarALista(recuerdaLexema[0], recuerdaLexema[1], recuerdaLexema[3], tipoIdentificador, nombreIdentificador, valorIdentificador); 
+                    }*/
+                        
+                    
                     lexema = "";
                     estado = 0;
                     break;
@@ -128,13 +164,6 @@ public class Tokenizer {
 
                 case 5:
                     agregarALista(lexema, Lexemas.NUMERO);
-                    
-                    DefaultTableModel modelo = new DefaultTableModel();
-                    vista.tabla.setModel(modelo);
-                    //String [] aux = arrayNumero.get(0).getClass().toString().split(".");
-                    
-                    
-                    //rellenarTabla(aux[aux.length -1], arrayIdentificador.get(0) , String.valueOf(arrayNumero.get(0)));
                     
                     lexema = "";
                     estado = 0;
@@ -168,6 +197,7 @@ public class Tokenizer {
         }
         
         vista.tablaLexemas.setModel(new DefaultTableModel(tablaLexemas(), new String[]{"Tipo", "Lexema"}));
+        //vista.tabla.setModel(new DefaultTableModel(tablaIdentificadores(), new String[]{"Tipo", "Nombre", "Valor"}));
 
     }
     
@@ -200,6 +230,17 @@ public class Tokenizer {
         tiposLexemas[tiposLexemas.length -1] = tipo.tipo;
     }
     
+    private void agregarALista(String a, String b, String [] array1, String [] array2){ // Para tabla de Identificadores
+        String [] arr1 = Arrays.copyOf(array1, array1.length + 1);
+        arr1[arr1.length - 1] = a;
+        
+        String [] arr2 = Arrays.copyOf(array2, array2.length + 1);
+        arr2[arr2.length - 1] = b;
+        
+        array1 = arr1;
+        array2 = arr2;
+    }
+    
     private String [][] tablaLexemas(){
         String [][] tablaLexemas = new String[lexemas.length][2];
         for (int i = 0; i < lexemas.length; i++) {
@@ -209,6 +250,16 @@ public class Tokenizer {
         return tablaLexemas;
     }
 
+    private String [][] tablaIdentificadores(){
+        String [][] tablaIdentificadores = new String[nombreIdentificador.length][3];
+        for (int i = 0; i < nombreIdentificador.length; i++) {
+            tablaIdentificadores[i][0] = tipoIdentificador[i];
+            tablaIdentificadores[i][1] = nombreIdentificador[i];
+            tablaIdentificadores[i][2] = valorIdentificador[i];
+        }
+        return tablaIdentificadores;
+    }
+    
     /**
      * @param c, si el caracter c se encuentra entre a-z y A-Z, significa que es
      * letra, devuelve true
