@@ -12,69 +12,77 @@ import java.util.Arrays;
  */
 public class Tokenizer {
 
-    public String [] arrayIdentificador;
-    public int [] arrayNumero;
-    public double [] arrayNumeroFlotante;
-    public String [] arraySimbolo;
-    public String [] arrayPalabraReservada;
-    
-    public String [] lexemas;
-    public String [] tiposLexemas;
-    
-    public String [] tipoIdentificador;
-    public String [] nombreIdentificador;
-    public String [] valorIdentificador;
-    private String [] recuerdaLexema;
+    public String[] arrayIdentificador;
+    public int[] arrayNumero;
+    public double[] arrayNumeroFlotante;
+    public String[] arraySimbolo;
+    public String[] arrayPalabraReservada;
 
-    
-    public enum Lexemas{
+    public String[] lexemas;
+    public String[] tiposLexemas;
+
+    public String[] tipoIdentificador;
+    public String[] nombreIdentificador;
+    public String[] valorIdentificador;
+    public String[] atributosDePalabra;
+    public ArrayList<String> arrayAtributosDePalabras;
+//    private String [] recuerdaLexema;
+
+    String recuerdo = "";
+    String atributosDePalabras = "";
+
+    public enum Lexemas {
         RESERVADA("Palabra Reservada"),
         IDENTIFICADOR("Identificador"),
         NUMERO("Numero"),
         NUMERO_DECIMAL("Numero Decimal"),
         SIMBOLO("Caracter");
-                
+
         private final String tipo;
-        
-        private Lexemas(String tipo){
+
+        private Lexemas(String tipo) {
             this.tipo = tipo;
         }
-        
+
     }
-    
-    
+
     Vista vista;
-    public static final String[] palabrasReservadas = new String[]{"return", "final", 
+    public static final String[] palabrasReservadas = new String[]{"return", "final",
         "static", "void", "int", "long", "public", "private", "protected", "new",
-        "boolean", "true", "false", "while", "for", "do", "switch", "case", "if", 
-        "else", "break", "class", "package", "import", "throws", "null", "float", 
-        "byte", "short", "double", "String"};
-    
-    public static final String [] tiposDeDatos = new String[]{"int", "double", 
+        "boolean", "true", "false", "while", "for", "do", "switch", "case", "if",
+        "else", "break", "class", "package", "import", "throws", "null", "float",
+        "byte", "short", "double", "String", "FileReader", "BufferedReader"};
+
+    public static final String[] tiposDeDatos = new String[]{"int", "double",
         "String", "long", "short", "class", "boolean", "char", "byte"};
-    
+
     /**
      * Constructor
      *
      * @param vista
      */
     public Tokenizer(Vista vista) {
+
         this.vista = vista;
-        arrayIdentificador = new String [0];
+        arrayIdentificador = new String[0];
         arrayNumero = new int[0];
         arrayNumeroFlotante = new double[0];
-        arraySimbolo = new String [0];
-        arrayPalabraReservada = new String [0];
-        
+        arraySimbolo = new String[0];
+        arrayPalabraReservada = new String[0];
+
         //Tabla Lexemas
-        lexemas = new String [0];
-        tiposLexemas = new String [0];
-        
+        lexemas = new String[0];
+        tiposLexemas = new String[0];
+
         //tabla Identificador
         tipoIdentificador = new String[0];
-        nombreIdentificador  = new String[0];
+        nombreIdentificador = new String[0];
         valorIdentificador = new String[0];
-        recuerdaLexema = new String[4];
+
+        atributosDePalabra = new String[0];
+//        recuerdaLexema = new String[4];
+        arrayAtributosDePalabras = new ArrayList<>();
+
     }
 
     /**
@@ -89,6 +97,7 @@ public class Tokenizer {
      * principal.
      */
     public void tokenizer(String zote) {
+
         String lexema;
         int i = 0, estado = 0;
         lexema = "";
@@ -116,27 +125,115 @@ public class Tokenizer {
                     break;
 
                 case 2: // - Decidir si es reservada o un identificador
-                    
+
                     if (esReservada(lexema)) {
                         agregarALista(lexema, Lexemas.RESERVADA);
+
                         /*
                         for (String dato : tiposDeDatos)
                             if(dato.equals(lexema))
                                 recuerdaLexema[0] = lexema;
-                        */
+                         */
                     } else {
                         agregarALista(lexema, Lexemas.IDENTIFICADOR);
                         /*
                         if(recuerdaLexema[0] != null)
                             recuerdaLexema[1] = lexema;
-                        */
+                         */
                     }
                     /*
-                    if(recuerdaLexema[0] != null && recuerdaLexema[1] != null && recuerdaLexema[2] != null && recuerdaLexema[3] != null){
-                        agregarALista(recuerdaLexema[0], recuerdaLexema[1], recuerdaLexema[3], tipoIdentificador, nombreIdentificador, valorIdentificador); 
-                    }*/
+            if(recuerdaLexema[0] != null && recuerdaLexema[1] != null && recuerdaLexema[2] != null && recuerdaLexema[3] != null){
+            agregarALista(recuerdaLexema[0], recuerdaLexema[1], recuerdaLexema[3], tipoIdentificador, nombreIdentificador, valorIdentificador);
+            }*/     
+                    boolean contieneElIdentificador = false;
+                    String aux1;
+                    for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
                         
-                    
+                            aux1 = ObtenerIdentificador(arrayAtributosDePalabras.get(j)); // ej. int:ab:12 , devuelve "ab"
+                            if (aux1.equals(lexema)) {
+                                contieneElIdentificador = true;
+                                break;
+                            }
+                            
+                    }
+                    if (contieneElIdentificador) { // si lexema ya existe
+                        String aux;
+
+                        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
+                            
+                            aux = ObtenerIdentificador(arrayAtributosDePalabras.get(j)); // ej. int:ab:12 , devuelve "ab"
+                            
+                            if (aux.equals(lexema)) {
+//                                System.out.println(ObtenerTipo(arrayAtributosDePalabras.get(j)));
+//                                System.out.println(ObtenerIdentificador(arrayAtributosDePalabras.get(j)));
+//                                System.out.println("eoo:" + ObtenerUltimoNumero(arrayAtributosDePalabras.get(j) + ";"));
+                                
+                                String aux2 = ObtenerTipo(arrayAtributosDePalabras.get(j)) + ":" + 
+                                              ObtenerIdentificador(arrayAtributosDePalabras.get(j)) + ":" +
+                                              ObtenerUltimoNumero(arrayAtributosDePalabras.get(j) + ";");
+                                System.err.println(aux2);
+                                arrayAtributosDePalabras.add(aux2);
+                                arrayAtributosDePalabras.remove(j);
+                                
+                            }
+                            
+                            
+                        }
+
+                    } else { // si no existe lexema
+                        switch (recuerdo) {
+                            case "class":
+                                atributosDePalabras = recuerdo + ":" + lexema + ":" + zote.substring(i);
+                                System.out.println(atributosDePalabras);
+                                break;
+                            case "int":
+                            case "short":
+                            case "byte":
+                            case "long":
+                            case "double":
+                            case "String":
+                            case "FileReader":
+                            case "BufferedReader":
+                                String subS;
+                                
+                                subS = zote.substring(zote.indexOf(recuerdo), zote.indexOf(";") + 1);
+
+                                if (!subS.contains("=")) { // si no está inicializada se iniciliza en su valor respectivo
+                                    switch (recuerdo) {
+                                        
+                                        case "double":
+                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "0.0";
+                                            break;
+                                        case "String":
+                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "\"\"";
+                                            break;
+                                        default:
+                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "0";
+                                            break;
+                                    }
+                                    
+                                } else {
+                                    if (recuerdo.equals("String")) {
+                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoValorString(subS);
+                                    }else{
+                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoNumero(subS);
+                                    }
+                                    
+                                }
+                                if (!arrayAtributosDePalabras.contains(atributosDePalabras)) { // si no contiene el elemento se añade
+                                        arrayAtributosDePalabras.add(atributosDePalabras);
+                                    }
+                                i = zote.indexOf(";");
+                                zote = zote.substring(0, zote.indexOf(";")) + " " + zote.substring(i + 1);
+                                System.out.println(atributosDePalabras);
+                                
+                                break; // fin tipos de Datos
+
+                            default:
+                                break;
+                        }// fin switch
+                    }
+                    recuerdo = lexema;
                     lexema = "";
                     estado = 0;
                     break;
@@ -153,18 +250,20 @@ public class Tokenizer {
                         lexema += zote.charAt(i);
                         i++;
 
-                    } else if(zote.charAt(i) == '.'){
+                    } else if (zote.charAt(i) == '.') {
                         lexema += zote.charAt(i);
-                        
+
                         i++;
                         estado = 6;
+                    } else {
+                        estado = 5;
                     }
-                    else estado = 5;
                     break;
 
                 case 5:
                     agregarALista(lexema, Lexemas.NUMERO);
-                    
+
+                    recuerdo = lexema;
                     lexema = "";
                     estado = 0;
                     break;
@@ -178,7 +277,8 @@ public class Tokenizer {
                     break;
                 case 9:
                     agregarALista(lexema, Lexemas.NUMERO_DECIMAL);
-                    
+
+                    recuerdo = lexema;
                     lexema = "";
                     estado = 0;
                     break;
@@ -190,19 +290,26 @@ public class Tokenizer {
                     } else {
                         agregarALista(String.valueOf(zote.charAt(i)), Lexemas.SIMBOLO);
                     }
+                     {
+
+                    }
+
                     i++;
                     estado = 0;
-                    
+
             }
         }
-        
+        System.out.println("Datos del ArrayList");
+        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
+            System.out.println(arrayAtributosDePalabras.get(j));
+        }
         vista.tablaLexemas.setModel(new DefaultTableModel(tablaLexemas(), new String[]{"Tipo", "Lexema"}));
-        //vista.tabla.setModel(new DefaultTableModel(tablaIdentificadores(), new String[]{"Tipo", "Nombre", "Valor"}));
+        vista.tabla.setModel(new DefaultTableModel(tablaIdentificadores(), new String[]{"Tipo", "Nombre", "Valor"}));
 
     }
-    
-    private void agregarALista(String lexema, Lexemas tipo){
-        switch(tipo){
+
+    private void agregarALista(String lexema, Lexemas tipo) {
+        switch (tipo) {
             case IDENTIFICADOR:
                 arrayIdentificador = Arrays.copyOf(arrayIdentificador, arrayIdentificador.length + 1);
                 arrayIdentificador[arrayIdentificador.length - 1] = lexema;
@@ -223,26 +330,26 @@ public class Tokenizer {
                 arraySimbolo = Arrays.copyOf(arraySimbolo, arraySimbolo.length + 1);
                 arraySimbolo[arraySimbolo.length - 1] = lexema;
         }
-        
+
         lexemas = Arrays.copyOf(lexemas, lexemas.length + 1);
         lexemas[lexemas.length - 1] = lexema;
         tiposLexemas = Arrays.copyOf(tiposLexemas, tiposLexemas.length + 1);
-        tiposLexemas[tiposLexemas.length -1] = tipo.tipo;
+        tiposLexemas[tiposLexemas.length - 1] = tipo.tipo;
     }
-    
-    private void agregarALista(String a, String b, String [] array1, String [] array2){ // Para tabla de Identificadores
-        String [] arr1 = Arrays.copyOf(array1, array1.length + 1);
+
+    private void agregarALista(String a, String b, String[] array1, String[] array2) { // Para tabla de Identificadores
+        String[] arr1 = Arrays.copyOf(array1, array1.length + 1);
         arr1[arr1.length - 1] = a;
-        
-        String [] arr2 = Arrays.copyOf(array2, array2.length + 1);
+
+        String[] arr2 = Arrays.copyOf(array2, array2.length + 1);
         arr2[arr2.length - 1] = b;
-        
+
         array1 = arr1;
         array2 = arr2;
     }
-    
-    private String [][] tablaLexemas(){
-        String [][] tablaLexemas = new String[lexemas.length][2];
+
+    private String[][] tablaLexemas() {
+        String[][] tablaLexemas = new String[lexemas.length][2];
         for (int i = 0; i < lexemas.length; i++) {
             tablaLexemas[i][0] = tiposLexemas[i];
             tablaLexemas[i][1] = lexemas[i];
@@ -250,8 +357,8 @@ public class Tokenizer {
         return tablaLexemas;
     }
 
-    private String [][] tablaIdentificadores(){
-        String [][] tablaIdentificadores = new String[nombreIdentificador.length][3];
+    private String[][] tablaIdentificadores() {
+        String[][] tablaIdentificadores = new String[nombreIdentificador.length][3];
         for (int i = 0; i < nombreIdentificador.length; i++) {
             tablaIdentificadores[i][0] = tipoIdentificador[i];
             tablaIdentificadores[i][1] = nombreIdentificador[i];
@@ -259,7 +366,7 @@ public class Tokenizer {
         }
         return tablaIdentificadores;
     }
-    
+
     /**
      * @param c, si el caracter c se encuentra entre a-z y A-Z, significa que es
      * letra, devuelve true
@@ -295,63 +402,139 @@ public class Tokenizer {
         return false;
     }
 
-    boolean esFlotante(String n) {
-
-        return n.contains(".");
-    }
-
     /**
      * @param a, arraylist que se fue llenando mientras se analizaba el
      * StringZote
      * @param txt, JTextArea que se llenará y que mostrará en pantalla
      */
-    public void rellenarTextField(String [] a, JTextArea txt) {
+    public void rellenarTextField(String[] a, JTextArea txt) {
+        String aux = "";
+        for (String a1 : a) {
+            aux += a1 + "    ";
+        }
+        txt.setText(aux);
+    }
+
+    public void rellenarTextFieldNumerico(int[] a, JTextArea txt) {
         String aux = "";
         for (int i = 0; i < a.length; i++) {
             aux += a[i] + "    ";
         }
         txt.setText(aux);
     }
-     public void rellenarTextFieldNumerico(int [] a, JTextArea txt) {
+
+    public void rellenarTextFieldDecimal(double[] a, JTextArea txt) {
         String aux = "";
         for (int i = 0; i < a.length; i++) {
             aux += a[i] + "    ";
         }
         txt.setText(aux);
     }
-      public void rellenarTextFieldDecimal(double [] a, JTextArea txt) {
+
+    public String ObtenerResultado(String s) {
+        int i = s.indexOf("=") + 1;
+        int j = s.indexOf(";");
         String aux = "";
-        for (int i = 0; i < a.length; i++) {
-            aux += a[i] + "    ";
+        for (int k = i; k < j; k++) {
+            if (!(s.charAt(k) == ' ')) {
+                aux += s.charAt(k);
+            }
+
         }
-        txt.setText(aux);
+
+        return aux;
+    }
+
+    public String ObtenerIdentificador(String s) {
+        int indice = s.indexOf(":");
+        String aux = "";
+        for (int k = indice + 1; k < s.length(); k++) {
+            if (s.charAt(k) == ':') {
+                return aux;
+            }
+            aux += s.charAt(k);
+
+        }
+
+        return aux;
+    }
+    public String ObtenerTipo(String s) {
+        String aux = "";
+        for (int k = 0; k < s.length(); k++) {
+            if (s.charAt(k) == ':') {
+                return aux;
+            }
+            aux += s.charAt(k);
+
+        }
+
+        return aux;
+    }
+    public String ObtenerUltimoValorString(String s) {
+        
+        String aux = "";
+        
+        for (int k = s.length()-3; k > 0; k--) {
+            if (s.charAt(k) != '"') {
+                aux += s.charAt(k);
+            }else{
+                break;
+            }
+        }
+        String auxFinal = "";
+        for (int i = aux.length()-1; i >= 0; i--) {
+            auxFinal += aux.charAt(i);
+        }
+
+        return auxFinal;
+    }
+    public String ObtenerUltimoNumero(String s) {
+        
+        String aux = "";
+        
+        for (int k = s.length()-2; k > 0; k--) {
+            if (esDígito(s.charAt(k)) || s.charAt(k) == '.') {
+                aux += s.charAt(k);
+            }else{
+                break;
+            }
+        }
+        String auxFinal = "";
+        for (int i = aux.length()-1; i >= 0; i--) {
+            auxFinal += aux.charAt(i);
+        }
+
+        return auxFinal;
     }
     
-    public void rellenarTabla(Class a, String b, String c){
-        vista.tabla.setModel(new javax.swing.table.DefaultTableModel(
-                            new Object[][]{
-                                {a,b,c}
-                            },
-                            new String[]{
-                                "Tipo", "Nombre", "Valor"
-                            }
-                    ) {
-                        Class[] types = new Class[]{
-                            java.lang.String.class, java.lang.String.class, java.lang.String.class
-                        };
-                        boolean[] canEdit = new boolean[]{
-                            false, false, false
-                        };
+    
+//    public int busquedaBinariaRecursiva(String[] arreglo, String busqueda, int izquierda, int derecha) {
+//        // Si izquierda es mayor que derecha significa que no encontramos nada
+//        if (izquierda > derecha) {
+//            return -1;
+//        }
+//
+//        // Calcula las mitades
+//        int indiceDelElementoDelMedio = (int) Math.floor((izquierda + derecha) / 2);
+//        String elementoDelMedio = arreglo[indiceDelElementoDelMedio];
+//
+//        // Primero vamos a comparar y luego vamos a ver si el resultado es negativo, positivo o 0
+//        int resultadoDeLaComparacion = busqueda.compareTo(elementoDelMedio);
+//
+//        // Si el resultado de la comparación es 0, significa que ambos elementos son iguales
+//        // y por lo tanto quiere decir que hemos encontrado la búsqueda
+//        if (resultadoDeLaComparacion == 0) {
+//            return indiceDelElementoDelMedio;
+//        }
+//
+//        // Si no, entonces vemos si está a la izquierda o derecha
+//        if (resultadoDeLaComparacion < 0) {
+//            derecha = indiceDelElementoDelMedio - 1;
+//            return busquedaBinariaRecursiva(arreglo, busqueda, izquierda, derecha);
+//        } else {
+//            izquierda = indiceDelElementoDelMedio + 1;
+//            return busquedaBinariaRecursiva(arreglo, busqueda, izquierda, derecha);
+//        }
+//    }
 
-                        @Override
-                        public Class getColumnClass(int columnIndex) {
-                            return types[columnIndex];
-                        }
-
-                        @Override
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                            return canEdit[columnIndex];
-                        }
-                    });
-    }
 }
