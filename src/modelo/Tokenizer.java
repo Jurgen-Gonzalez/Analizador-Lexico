@@ -25,7 +25,8 @@ public class Tokenizer {
     public String[] nombreIdentificador;
     public String[] valorIdentificador;
     public String[] atributosDePalabra;
-    public ArrayList<String> arrayAtributosDePalabras;
+    
+//    public ArrayList<String> arrayAtributosDePalabras;
 //    private String [] recuerdaLexema;
 
     String recuerdo = "";
@@ -55,6 +56,11 @@ public class Tokenizer {
 
     public static final String[] tiposDeDatos = new String[]{"int", "double",
         "String", "long", "short", "class", "boolean", "char", "byte"};
+    
+    public static final char[] tablaDeSimbolos = new char[]{'+','-','*','/','.','(',')','[',']','{','}',';','\'','=', 
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'U', 'V', 'X', 'Y', 'Z'
+        , '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     /**
      * Constructor
@@ -81,7 +87,7 @@ public class Tokenizer {
 
         atributosDePalabra = new String[0];
 //        recuerdaLexema = new String[4];
-        arrayAtributosDePalabras = new ArrayList<>();
+//        arrayAtributosDePalabras = new ArrayList<>();
 
     }
 
@@ -102,7 +108,7 @@ public class Tokenizer {
         int i = 0, estado = 0;
         lexema = "";
 
-        while (i < zote.length()) {
+        outer: while (i < zote.length()) {
             switch (estado) {
 
                 case 0:
@@ -129,110 +135,58 @@ public class Tokenizer {
                     if (esReservada(lexema)) {
                         agregarALista(lexema, Lexemas.RESERVADA);
 
-                        /*
-                        for (String dato : tiposDeDatos)
-                            if(dato.equals(lexema))
-                                recuerdaLexema[0] = lexema;
-                         */
                     } else {
-                        agregarALista(lexema, Lexemas.IDENTIFICADOR);
-                        /*
-                        if(recuerdaLexema[0] != null)
-                            recuerdaLexema[1] = lexema;
-                         */
+                        if(isInArray(lexema, arrayIdentificador))
+                            agregarALista(lexema, Lexemas.IDENTIFICADOR);
                     }
-                    /*
-            if(recuerdaLexema[0] != null && recuerdaLexema[1] != null && recuerdaLexema[2] != null && recuerdaLexema[3] != null){
-            agregarALista(recuerdaLexema[0], recuerdaLexema[1], recuerdaLexema[3], tipoIdentificador, nombreIdentificador, valorIdentificador);
-            }*/     
                     boolean contieneElIdentificador = false;
                     String aux1;
-                    for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
-                        
-                            aux1 = ObtenerIdentificador(arrayAtributosDePalabras.get(j)); // ej. int:ab:12 , devuelve "ab"
-                            if (aux1.equals(lexema)) {
-                                contieneElIdentificador = true;
-                                break;
-                            }
-                            
-                    }
-                    if (contieneElIdentificador) { // si lexema ya existe
-                        String aux;
+                    switch (recuerdo) {
+                        case "class":
+                            atributosDePalabras = recuerdo + ":" + lexema + ":" + zote.substring(i);
+                            System.out.println(atributosDePalabras);
+                            break;
+                        case "int":
+                        case "short":
+                        case "byte":
+                        case "long":
+                        case "double":
+                        case "String":
+                            String subS;
+                            subS = zote.substring(zote.indexOf(recuerdo), zote.indexOf(";") + 1);
 
-                        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
-                            
-                            aux = ObtenerIdentificador(arrayAtributosDePalabras.get(j)); // ej. int:ab:12 , devuelve "ab"
-                            
-                            if (aux.equals(lexema)) {
-//                                System.out.println(ObtenerTipo(arrayAtributosDePalabras.get(j)));
-//                                System.out.println(ObtenerIdentificador(arrayAtributosDePalabras.get(j)));
-//                                System.out.println("eoo:" + ObtenerUltimoNumero(arrayAtributosDePalabras.get(j) + ";"));
-                                
-                                String aux2 = ObtenerTipo(arrayAtributosDePalabras.get(j)) + ":" + 
-                                              ObtenerIdentificador(arrayAtributosDePalabras.get(j)) + ":" +
-                                              ObtenerUltimoNumero(arrayAtributosDePalabras.get(j) + ";");
-                                System.err.println(aux2);
-                                arrayAtributosDePalabras.add(aux2);
-                                arrayAtributosDePalabras.remove(j);
-                                
-                            }
-                            
-                            
-                        }
+                            if (!subS.contains("=")) { // si no está inicializada se iniciliza en su valor respectivo
+                                switch (recuerdo) {
 
-                    } else { // si no existe lexema
-                        switch (recuerdo) {
-                            case "class":
-                                atributosDePalabras = recuerdo + ":" + lexema + ":" + zote.substring(i);
-                                System.out.println(atributosDePalabras);
-                                break;
-                            case "int":
-                            case "short":
-                            case "byte":
-                            case "long":
-                            case "double":
-                            case "String":
-                            case "FileReader":
-                            case "BufferedReader":
-                                String subS;
-                                
-                                subS = zote.substring(zote.indexOf(recuerdo), zote.indexOf(";") + 1);
-
-                                if (!subS.contains("=")) { // si no está inicializada se iniciliza en su valor respectivo
-                                    switch (recuerdo) {
-                                        
-                                        case "double":
-                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "0.0";
-                                            break;
-                                        case "String":
-                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "\"\"";
-                                            break;
-                                        default:
-                                            atributosDePalabras = recuerdo + ":" + lexema + ":" + "0";
-                                            break;
-                                    }
-                                    
-                                } else {
-                                    if (recuerdo.equals("String")) {
-                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoValorString(subS);
-                                    }else{
-                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoNumero(subS);
-                                    }
-                                    
+                                    case "double":
+                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "0.0";
+                                        break;
+                                    case "String":
+                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "\"\"";
+                                        break;
+                                    default:
+                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "0";
+                                        break;
                                 }
-                                if (!arrayAtributosDePalabras.contains(atributosDePalabras)) { // si no contiene el elemento se añade
-                                        arrayAtributosDePalabras.add(atributosDePalabras);
-                                    }
-                                i = zote.indexOf(";");
-                                zote = zote.substring(0, zote.indexOf(";")) + " " + zote.substring(i + 1);
-                                System.out.println(atributosDePalabras);
-                                
-                                break; // fin tipos de Datos
 
-                            default:
-                                break;
-                        }// fin switch
-                    }
+                            } else {
+                                if (recuerdo.equals("String")) {
+                                    atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoValorString(subS);
+                                }else{
+                                    atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoNumero(subS);
+                                }
+
+                            }
+                            i = zote.indexOf(";");
+                            zote = zote.substring(0, zote.indexOf(";")) + " " + zote.substring(i + 1);
+                            System.out.println(atributosDePalabras);
+
+                            break; // fin tipos de Datos
+
+                        default:
+                            break;
+                    }// fin switch
+
                     recuerdo = lexema;
                     lexema = "";
                     estado = 0;
@@ -288,10 +242,11 @@ public class Tokenizer {
                     if (esEspacio(zote.charAt(i))) {
 
                     } else {
+                        if(!isInArray(zote.charAt(i), tablaDeSimbolos)){
+                            System.out.println("Error en el caracter "+zote.charAt(i));
+                            break outer;
+                        }
                         agregarALista(String.valueOf(zote.charAt(i)), Lexemas.SIMBOLO);
-                    }
-                     {
-
                     }
 
                     i++;
@@ -299,10 +254,10 @@ public class Tokenizer {
 
             }
         }
-        System.out.println("Datos del ArrayList");
-        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
-            System.out.println(arrayAtributosDePalabras.get(j));
-        }
+//        System.out.println("Datos del ArrayList");
+//        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
+//            System.out.println(arrayAtributosDePalabras.get(j));
+//        }
         vista.tablaLexemas.setModel(new DefaultTableModel(tablaLexemas(), new String[]{"Tipo", "Lexema"}));
         vista.tabla.setModel(new DefaultTableModel(tablaIdentificadores(), new String[]{"Tipo", "Nombre", "Valor"}));
 
@@ -507,34 +462,20 @@ public class Tokenizer {
         return auxFinal;
     }
     
+    private boolean isInArray(char word, char [] array){
+        for (int i = 0; i < array.length; i++) {
+            if(word == array[i])
+                return true;
+        }
+        return false;
+    }
     
-//    public int busquedaBinariaRecursiva(String[] arreglo, String busqueda, int izquierda, int derecha) {
-//        // Si izquierda es mayor que derecha significa que no encontramos nada
-//        if (izquierda > derecha) {
-//            return -1;
-//        }
-//
-//        // Calcula las mitades
-//        int indiceDelElementoDelMedio = (int) Math.floor((izquierda + derecha) / 2);
-//        String elementoDelMedio = arreglo[indiceDelElementoDelMedio];
-//
-//        // Primero vamos a comparar y luego vamos a ver si el resultado es negativo, positivo o 0
-//        int resultadoDeLaComparacion = busqueda.compareTo(elementoDelMedio);
-//
-//        // Si el resultado de la comparación es 0, significa que ambos elementos son iguales
-//        // y por lo tanto quiere decir que hemos encontrado la búsqueda
-//        if (resultadoDeLaComparacion == 0) {
-//            return indiceDelElementoDelMedio;
-//        }
-//
-//        // Si no, entonces vemos si está a la izquierda o derecha
-//        if (resultadoDeLaComparacion < 0) {
-//            derecha = indiceDelElementoDelMedio - 1;
-//            return busquedaBinariaRecursiva(arreglo, busqueda, izquierda, derecha);
-//        } else {
-//            izquierda = indiceDelElementoDelMedio + 1;
-//            return busquedaBinariaRecursiva(arreglo, busqueda, izquierda, derecha);
-//        }
-//    }
-
+    private boolean isInArray(String word, String [] array){
+        for (int i = 0; i < array.length; i++) {
+            if(word.equals(array[i]))
+                return true;
+        }
+        return false;
+    }
+    
 }

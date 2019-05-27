@@ -1,7 +1,7 @@
 
 public class Archivo {
     
-    double a = 000.7500;
+    double a = 000.7500;?
     int n = 1998;
 	String p12;
 
