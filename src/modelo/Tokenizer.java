@@ -1,6 +1,5 @@
 package modelo;
 
-import java.util.ArrayList;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import vista.Vista;
@@ -25,9 +24,6 @@ public class Tokenizer {
     public String[] nombreIdentificador;
     public String[] valorIdentificador;
     public String[] atributosDePalabra;
-    
-//    public ArrayList<String> arrayAtributosDePalabras;
-//    private String [] recuerdaLexema;
 
     String recuerdo = "";
     String atributosDePalabras = "";
@@ -52,15 +48,15 @@ public class Tokenizer {
         "static", "void", "int", "long", "public", "private", "protected", "new",
         "boolean", "true", "false", "while", "for", "do", "switch", "case", "if",
         "else", "break", "class", "package", "import", "throws", "null", "float",
-        "byte", "short", "double", "String", "FileReader", "BufferedReader"};
+        "byte", "short", "double", "String"};
 
     public static final String[] tiposDeDatos = new String[]{"int", "double",
         "String", "long", "short", "class", "boolean", "char", "byte"};
-    
-    public static final char[] tablaDeSimbolos = new char[]{'+','-','*','/','.','(',')','[',']','{','}',';','\'','=', 
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'U', 'V', 'X', 'Y', 'Z'
-        , '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    public static final char[] tablaDeSimbolos = new char[]{'+', '-', '*', '/', '.', '(', ')', '[', ']', '{', '}', ';', '\'', '=',
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'U', 'V', 'X', 'Y', 'Z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     /**
      * Constructor
@@ -97,10 +93,7 @@ public class Tokenizer {
      * La variable i será quien recorrerá todo el String, siempre incrementando
      * de uno en uno. La variable estado nos servirá para cambiarnos de estado
      * dentro del autómata. La variable lexema nos servirá para concatenar los
-     * caracteres que están seguidos, excepto por espacios. Algunos case: nos
-     * sirven como transiciones, y otros como estados. Dentro del switch hay
-     * arraylist que usaremos para rellenar los JTextArea de la pantalla
-     * principal.
+     * caracteres que están seguidos, excepto por espacios.
      */
     public void tokenizer(String zote) {
 
@@ -108,7 +101,8 @@ public class Tokenizer {
         int i = 0, estado = 0;
         lexema = "";
 
-        outer: while (i < zote.length()) {
+        outer:
+        while (i < zote.length()) {
             switch (estado) {
 
                 case 0:
@@ -131,16 +125,26 @@ public class Tokenizer {
                     break;
 
                 case 2: // - Decidir si es reservada o un identificador
-
+//                    System.out.println("\tLEXEMA: " + lexema);
+//                    if (!contieneCaracteresValidos(lexema)) {// verifica si tiene caracteres válidos
+//                        System.out.println("Error: Contiene Carácter inválido: " + lexema);
+//                        break outer;
+//                    }
+                    
                     if (esReservada(lexema)) {
+
                         agregarALista(lexema, Lexemas.RESERVADA);
 
-                    } else {
-                        if(isInArray(lexema, arrayIdentificador))
+                    } else {                       
+                        
+                        if (isInArray(lexema, arrayIdentificador)) { // si hay algú identificador repetido, se detiene el programa
+                            System.out.println("ERROR: IDENTIFICADOR REPETIDO: " + lexema);
+                            break outer;
+                        } else { // se añaden todos los identificadores
                             agregarALista(lexema, Lexemas.IDENTIFICADOR);
+                        }
                     }
-                    boolean contieneElIdentificador = false;
-                    String aux1;
+
                     switch (recuerdo) {
                         case "class":
                             atributosDePalabras = recuerdo + ":" + lexema + ":" + zote.substring(i);
@@ -151,32 +155,37 @@ public class Tokenizer {
                         case "byte":
                         case "long":
                         case "double":
+
+//                            break;
                         case "String":
-                            String subS;
+                            String subS; // instrucción
                             subS = zote.substring(zote.indexOf(recuerdo), zote.indexOf(";") + 1);
-
-                            if (!subS.contains("=")) { // si no está inicializada se iniciliza en su valor respectivo
-                                switch (recuerdo) {
-
-                                    case "double":
-                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "0.0";
-                                        break;
-                                    case "String":
-                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "\"\"";
-                                        break;
-                                    default:
-                                        atributosDePalabras = recuerdo + ":" + lexema + ":" + "0";
-                                        break;
-                                }
-
+// bien
+                            if (recuerdo.equals("String")) {
+                                atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoValorString(subS);
+                            } else if (recuerdo.equals("double")) {
+                            String valorDeVariable = ObtenerUltimoNumero(subS);
+                            valorDeVariable = borrarCerosDouble(valorDeVariable);
+                            
+                            
+                            atributosDePalabras = recuerdo + ":" + lexema + ":" + valorDeVariable;
+                            
                             } else {
-                                if (recuerdo.equals("String")) {
-                                    atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoValorString(subS);
-                                }else{
-                                    atributosDePalabras = recuerdo + ":" + lexema + ":" + ObtenerUltimoNumero(subS);
+
+                                String valorDeVariable = ObtenerUltimoNumero(subS);
+
+                                for (int j = 0; j < valorDeVariable.length(); j++) { // quita los ceros de los no flotantes
+                                    if (valorDeVariable.charAt(j) == '0') {
+
+                                    } else {
+                                        valorDeVariable = valorDeVariable.substring(j);
+                                        break;
+                                    }
                                 }
 
+                                atributosDePalabras = recuerdo + ":" + lexema + ":" + valorDeVariable;
                             }
+
                             i = zote.indexOf(";");
                             zote = zote.substring(0, zote.indexOf(";")) + " " + zote.substring(i + 1);
                             System.out.println(atributosDePalabras);
@@ -197,6 +206,7 @@ public class Tokenizer {
 
                     } else {
                         estado = 100;
+                        
                     }
                     break;
                 case 4:
@@ -242,10 +252,7 @@ public class Tokenizer {
                     if (esEspacio(zote.charAt(i))) {
 
                     } else {
-                        if(!isInArray(zote.charAt(i), tablaDeSimbolos)){
-                            System.out.println("Error en el caracter "+zote.charAt(i));
-                            break outer;
-                        }
+                        
                         agregarALista(String.valueOf(zote.charAt(i)), Lexemas.SIMBOLO);
                     }
 
@@ -254,10 +261,6 @@ public class Tokenizer {
 
             }
         }
-//        System.out.println("Datos del ArrayList");
-//        for (int j = 0; j < arrayAtributosDePalabras.size(); j++) {
-//            System.out.println(arrayAtributosDePalabras.get(j));
-//        }
         vista.tablaLexemas.setModel(new DefaultTableModel(tablaLexemas(), new String[]{"Tipo", "Lexema"}));
         vista.tabla.setModel(new DefaultTableModel(tablaIdentificadores(), new String[]{"Tipo", "Nombre", "Valor"}));
 
@@ -413,6 +416,7 @@ public class Tokenizer {
 
         return aux;
     }
+
     public String ObtenerTipo(String s) {
         String aux = "";
         for (int k = 0; k < s.length(); k++) {
@@ -425,57 +429,97 @@ public class Tokenizer {
 
         return aux;
     }
+
     public String ObtenerUltimoValorString(String s) {
-        
+
         String aux = "";
-        
-        for (int k = s.length()-3; k > 0; k--) {
+
+        for (int k = s.length() - 3; k > 0; k--) {
             if (s.charAt(k) != '"') {
                 aux += s.charAt(k);
-            }else{
+            } else {
                 break;
             }
         }
         String auxFinal = "";
-        for (int i = aux.length()-1; i >= 0; i--) {
+        for (int i = aux.length() - 1; i >= 0; i--) {
             auxFinal += aux.charAt(i);
         }
 
         return auxFinal;
     }
+
     public String ObtenerUltimoNumero(String s) {
-        
+
         String aux = "";
-        
-        for (int k = s.length()-2; k > 0; k--) {
+
+        for (int k = s.length() - 2; k > 0; k--) {
             if (esDígito(s.charAt(k)) || s.charAt(k) == '.') {
                 aux += s.charAt(k);
-            }else{
+            } else {
                 break;
             }
         }
         String auxFinal = "";
-        for (int i = aux.length()-1; i >= 0; i--) {
+        for (int i = aux.length() - 1; i >= 0; i--) {
             auxFinal += aux.charAt(i);
         }
 
         return auxFinal;
     }
-    
-    private boolean isInArray(char word, char [] array){
+
+    private boolean isInArray(char word, char[] array) {
         for (int i = 0; i < array.length; i++) {
-            if(word == array[i])
+            if (word == array[i]) {
                 return true;
+            }
         }
         return false;
     }
-    
-    private boolean isInArray(String word, String [] array){
-        for (int i = 0; i < array.length; i++) {
-            if(word.equals(array[i]))
+
+    private boolean isInArray(String word, String[] array) {
+        for (String array1 : array) {
+            if (word.equals(array1)) {
                 return true;
+            }
         }
         return false;
     }
+    private String borrarCerosDouble(String subS) {
+
+        for (int k = subS.length() - 1; k > 0; k--) { // elimina los ceros despues del número
+
+            if (subS.charAt(k) == '0') {
+            } else {
+                subS = subS.substring(0, k + 1);
+
+                try {
+                    String x = String.valueOf(subS.charAt(subS.indexOf(".") + 1)); // esto no importa
+                    return subS;
+                } catch (Exception e) {
+                    return subS + "0";
+                }
+                
+                
+            }
+
+        }// fin for
+        return "";
+    }
     
+    private static boolean contieneCaracteresValidos(String s){
+        
+        for (int i = 0; i < tablaDeSimbolos.length; i++) {
+                
+                for (int j = 0; j < s.length(); j++) {
+                    
+                    if (tablaDeSimbolos[i] == s.charAt(j)) {
+                        return true;
+                    }
+                }
+        }
+        return false;
+        
+    }
+
 }

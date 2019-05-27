@@ -11,28 +11,50 @@ public class EliminarCeros {
      */
     public static void main(String[] args) {
         Float n = 3.3f;
-        
+
         String m = "";
-        System.out.println(obtenerClase(n.getClass().toString()));
-        
+        System.out.println(deleteZeroDouble("19.0020"));
+
     }
-    
-    public static String obtenerClase(String s){
-        
+
+    private static String deleteZeroDouble(String subS) {
+
+        for (int k = subS.length() - 1; k > 0; k--) { // elimina los ceros despues del número
+
+            if (subS.charAt(k) == '0') {
+            } else {
+                subS = subS.substring(0, k + 1);
+
+                try {
+                    String x = String.valueOf(subS.charAt(subS.indexOf(".") + 1)); // esto no importa
+                    return subS;
+                } catch (Exception e) {
+                    return subS + "0";
+                }
+                
+                
+            }
+
+        }// fin for
+        return "";
+    }
+
+    public static String obtenerClase(String s) {
+
         for (int i = s.length(); i > 0; i--) {
-            if (!esAlfa(s.charAt(i-1))) {
+            if (!esAlfa(s.charAt(i - 1))) {
                 return s.substring(i, s.length());
             }
-                
+
         }
-        
+
         return "";
     }// fin obtenerClase
-    
+
     static boolean esAlfa(char c) {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
     }
-    
+
     public static String eliminarCerosIzquierda(String s) {
 
         if (s.equals("0")) {
@@ -83,7 +105,5 @@ public class EliminarCeros {
 //        .class.toString();
         return c >= '0' && c <= '9';
     }
-    
-    
-    
+
 }
